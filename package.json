@@ -1,0 +1,33 @@
+{
+  "name": "LPS",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www -e js,json --exec babel-node --presets es2015"
+  },
+  "dependencies": {
+    "autoprefixer-stylus": "^0.11.0",
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2015": "^6.9.0",
+    "body-parser": "~1.15.1",
+    "busboy": "^0.2.13",
+    "concurrently": "^2.2.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "express": "~4.13.4",
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-stylus": "^2.5.0",
+    "gulp-uglify": "^2.0.0",
+    "localize": "^0.4.7",
+    "morgan": "~1.7.0",
+    "mysql": "^2.11.1",
+    "nodemailer": "^2.6.4",
+    "nodemon": "^1.9.2",
+    "pug": "^2.0.0-beta6",
+    "pump": "^1.0.1",
+    "serve-favicon": "~2.3.0",
+    "sql": "^0.71.0"
+  },
+  "devDependencies": {}
+}
