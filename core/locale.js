@@ -1,5 +1,5 @@
 import pug from 'pug'
-import common from '../core/common'
+import common from './common'
 
 const _loc = { fr:0, en:1 }
 

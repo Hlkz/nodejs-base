@@ -1,6 +1,8 @@
 import express from 'express'
-import File from '../core/file'
-import Process from '../core/process'
+import File from './file'
+import Process from './process'
+
+let env = process.env.NODE_ENV
 
 module.exports = function(app) {
   // Load pages
@@ -12,9 +14,9 @@ module.exports = function(app) {
     pages = rows
     pages.forEach(page => {
       if (page['path'] !== '') {
-        let fullPath = app.get('dirname')+'/src/page/'+page['path']+'.js'
-        if (File.exists(fullPath)) {
-          let js = require(fullPath)
+        let jsPath = __dirname+'/site/page/'+page['path']+'.js'
+        if (File.exists(jsPath)) {
+          let js = require(jsPath)
           page['js'] = js
         }
       }
@@ -32,7 +34,7 @@ module.exports = function(app) {
   })
 }
 
-let router = express.Router()
+let router2 = express.Router()
 
 let LoadRouter = app => {
   // Load routes
@@ -42,6 +44,7 @@ let LoadRouter = app => {
     if (!bases.includes(page['base']))
       bases.push(page['base'])
   })
+  let router = express.Router()
   bases.forEach(base => {
     router.use(base, (req, res, next) => {
       if (!Process(req, res))
@@ -50,6 +53,17 @@ let LoadRouter = app => {
   })
   app.use('/', router)
   app.use('/page/', router)
+
+  // Check for non registred pages
+  if (env === 'development')  {
+    let router2 = express.Router()
+    router2.use('/', (req, res, next) => {
+      if (!Process(req, res, true))
+        next()
+    })
+    app.use('/', router2)
+    app.use('/page/', router2)
+  }
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {

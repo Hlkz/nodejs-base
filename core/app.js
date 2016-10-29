@@ -4,25 +4,26 @@ import favicon from 'serve-favicon'
 import logger from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import { CorePath, DataPath } from './path'
 
 let app = express()
 
 // view engine setup
 app.set('dirname', __dirname)
-app.set('views', path.join(__dirname, 'core/pug'))
+app.set('views', path.join(CorePath, 'pug'))
 app.set('view engine', 'pug')
 
 app.use(logger('dev'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
-app.use('/data', express.static(path.join(__dirname, 'data')))
-app.use(favicon(path.join(__dirname, 'data/img/favicon.ico')))
+app.use('/data', express.static(DataPath))
+app.use(favicon(path.join(DataPath, 'img/favicon.ico')))
 
 // building and watching files (css, script)
-require('./core/gulp')
+require('./gulp')
 
-import config from './src/json/config.json'
+let config = require(path.join(CorePath, 'site/config/config.json'))
 app.set('config', config)
 
 // database setup
@@ -38,13 +39,13 @@ db.prefix = config_db.prefix
 app.set('database', db)
 
 // locale
-import locale from './core/locale'
+import locale from './locale'
 app.set('locale', locale)
 locale.load(db)
 
-import prefix from './core/prefix'
-import Catch from './core/catch'
-import Route from './core/route'
+import prefix from './prefix'
+import Catch from './catch'
+import Route from './route'
 
 app.use('/', prefix)
 Catch(app)

@@ -1,5 +1,7 @@
 /node_modules/*
 /bin/*
 /data/*
+/build/*
 /core/script/*
-/src/script/*
+/core/site/apps/*
+/core/site/script/*

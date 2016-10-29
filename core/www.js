@@ -6,7 +6,7 @@ console.log("Starting...")
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('./app');
 var debug = require('debug')('hlkz:server');
 var http = require('http');
 

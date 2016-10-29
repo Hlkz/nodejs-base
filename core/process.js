@@ -1,7 +1,25 @@
-import common from '../core/common'
-import Render from '../core/render'
+import common from './common'
+import File from './file'
+import Render from './render'
+import { CorePath } from './path'
 
-module.exports = function Process(req, res) {
+function NewPage(path, js = null) {
+  return {
+    name: path,
+    base: '',
+    path: path,
+    fr: path,
+    en: path,
+    regexfr: '',
+    regexen: '',
+    layout: '',
+    urlfr: '/'+path,
+    urlen: '/'+path,
+    js: js
+  }
+}
+
+module.exports = function Process(req, res, last = null) {
   // Get page if exists
   let base = req.baseUrl
   let isContent = false
@@ -17,21 +35,34 @@ module.exports = function Process(req, res) {
   let locale = req.locale
   let loca = locale.locale
 
-  let page = req.app.get('pages').find(page => {
-    if (page['base'] === base) {
-      let regexStr = page['regex'+loca]
-      if (regexStr === '') {
-        if (str === page[loca])
-          return true
+  let page = null
+
+  if (!last) { // Look for page in _pages sql table
+    page = req.app.get('pages').find(page => {
+      if (page['base'] === base) {
+        let regexStr = page['regex'+loca]
+        if (regexStr === '') {
+          if (str === page[loca])
+            return true
+        }
+        else {
+          let regex = new RegExp('^'+regexStr+'$')
+          if (regex.exec(str))
+            return true
+        }
       }
-      else {
-        let regex = new RegExp('^'+regexStr+'$')
-        if (regex.exec(str))
-          return true
-      }
-    }
-  })
-  
+    })
+  }
+  else { // Last process for non registred pages
+    let jsPath = __dirname+'/site/page/'+str+'.js'
+    let pugPath = CorePath+'/site/page/'+str+'.pug'
+    let js = null
+    if (File.exists(jsPath))
+      js = require(jsPath)
+    if ((js && js.pug) || File.exists(pugPath))
+      page = NewPage(str, js)
+  }
+
   if (!page)
     return false
 
@@ -40,7 +71,7 @@ module.exports = function Process(req, res) {
   res.viewLocals['pagePath'] = pagePath
   res.setPost = (post = true) => { res.viewLocals['post'] = post }
   res.setForm = (form = 0) => { res.viewLocals['form'] = form }
-  console.log('page', page['name'], isContent)
+  console.log('Page:', page['name'], '('+(isContent?'component':'full page')+')')
 
   let js = page['js']
 
