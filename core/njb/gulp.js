@@ -57,7 +57,7 @@ gulp.task('build-js', () => {
 gulp.task('build', ['build-corejs', 'build-js', 'build-css'])
 
 gulp.task('watch', () => {
-  gulp.watch(CorePath+'/script/*.js', ['build-corejs'])
+  gulp.watch(CorePath+'/njb/script/*.js', ['build-corejs'])
   gulp.watch(CorePath+'/site/script/*.js', ['build-js'])
   gulp.watch(CorePath+'/site/styl/*.styl', ['build-css'])
 })

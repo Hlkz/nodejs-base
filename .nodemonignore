@@ -2,6 +2,6 @@
 /bin/*
 /data/*
 /build/*
-/core/script/*
+/core/njb/script/*
 /core/site/apps/*
 /core/site/script/*

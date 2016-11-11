@@ -4,7 +4,7 @@ import Process from './process'
 
 let env = process.env.NODE_ENV
 
-module.exports = function(app) {
+export default (app) => {
   // Load pages
   let pages = []
   let db = app.get('database')
@@ -34,8 +34,6 @@ module.exports = function(app) {
   })
 }
 
-let router2 = express.Router()
-
 let LoadRouter = app => {
   // Load routes
   let pages = app.get('pages')
@@ -45,6 +43,7 @@ let LoadRouter = app => {
       bases.push(page['base'])
   })
   let router = express.Router()
+  let router2 = express.Router()
   bases.forEach(base => {
     router.use(base, (req, res, next) => {
       if (!Process(req, res))

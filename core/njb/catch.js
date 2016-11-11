@@ -1,4 +1,4 @@
-module.exports = function(app) {
+export default (app) => {
 //start
 
 app.use('/admin/locales', (req, res, next) => {

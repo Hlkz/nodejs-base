@@ -1,26 +1,45 @@
 import pug from 'pug'
-import common from './common'
+import common from './common' // error handle only
+
+// // Set db, set lib to var / load it 
+// let db = mysql.createConnection()
+// db.prefix = 'string' // tables prefix_locale_t, prefix_locale_txt, prefix_locale_pug
+// import Locale from './locale'
+// Locale.load(db)
+// // Create instance of lib for each viewer 
+// let locale = req.locale = {}
+// Object.setPrototypeOf(locale, Locale)
+// locale.setLocale('fr') // 'fr' or 'en'
+// locale.setNames(['string', 'array'])
+// locale.loadPage().then
+// // Translate 
+// locale.t()
+// locale.pug()
 
 const _loc = { fr:0, en:1 }
 
-let locale = {}
+let Locale = {}
 
-locale.load = function (db) {
+//
+// Public
+//
+
+Locale.load = function (db) {
   this.db = db
 }
 
-locale.setLocale = function(locale) {
+Locale.setLocale = function(locale) {
   this.locale = locale
   this.loc = _loc[locale]
 }
 
-locale.setNames = function(names) {
+Locale.setNames = function(names) {
   if (!Array.isArray(names))
     names = [ names ]
   this.names = names
 }
 
-locale.loadPage = function(callback, ...args) {
+Locale.loadPage = function() {
   return new Promise((resolve, reject) => {
     let loadContent = []
     this.names.forEach(name => {
@@ -32,13 +51,17 @@ locale.loadPage = function(callback, ...args) {
   })
 }
 
-locale.isContentLoaded = function(name) {
+//
+// Private
+//
+
+Locale.isContentLoaded = function(name) {
   if (!name)
     return true
   return this.loaded.includes(name)
 }
 
-locale.loadContent = function(name, force = false) {
+Locale.loadContent = function(name, force = false) {
   return new Promise((resolve, reject) => {
     if (!this.isContentLoaded(name) || force) {
       Promise.all([
@@ -59,7 +82,7 @@ locale.loadContent = function(name, force = false) {
   })
 }
 
-locale.loadPage_t = function(name) {
+Locale.loadPage_t = function(name) {
   return new Promise((resolve, reject) => {
     name = name === 'default' ? '' : name
     let query = 'SELECT page, name, fr, en FROM '+this.db.prefix+'locale_t'+(name ? ' WHERE page=\''+name+'\'' : '')
@@ -77,7 +100,7 @@ locale.loadPage_t = function(name) {
   })
 }
 
-locale.loadPage_txt = function(name) {
+Locale.loadPage_txt = function(name) {
   return new Promise((resolve, reject) => {
     name = name === 'default' ? '' : name
     let query = 'SELECT page, name, fr, en FROM '+this.db.prefix+'locale_txt'+(name ? ' WHERE page=\''+name+'\'' : '')
@@ -95,7 +118,7 @@ locale.loadPage_txt = function(name) {
   })
 }
 
-locale.loadPugLocale = function(pattern, container, locale, page) {
+Locale.loadPugLocale = function(pattern, container, locale, page) {
   return new Promise((resolve, reject) => {
     let locals = {
       t: this,
@@ -117,7 +140,7 @@ locale.loadPugLocale = function(pattern, container, locale, page) {
   })
 }
 
-locale.loadPage_pug = function(name) {
+Locale.loadPage_pug = function(name) {
   return new Promise((resolve, reject) => {
     name = name === 'default' ? '' : name
     let query = 'SELECT page, name, fr, en FROM '+this.db.prefix+'locale_pug'+(name ? ' WHERE page=\''+name+'\'' : '')
@@ -128,8 +151,8 @@ locale.loadPage_pug = function(name) {
         let _page = row['page'] === '' ? 'default' : row['page'], _name = row['name']
         this._pug[_page] = this._pug[_page] || {}
         this._pug[_page][_name] = this._pug[_page][_name] || {}
-		this._pug[_page][_name]['fr'] = null
-		this._pug[_page][_name]['en'] = null
+    this._pug[_page][_name]['fr'] = null
+    this._pug[_page][_name]['en'] = null
         promises.push(this.loadPugLocale(row['fr'], this._pug[_page][_name], 'fr', _page))
         promises.push(this.loadPugLocale(row['en'], this._pug[_page][_name], 'en', _page))
       })
@@ -140,7 +163,11 @@ locale.loadPage_pug = function(name) {
   })
 }
 
-locale.t = function (str, self = null) {
+//
+// Translate
+//
+
+Locale.t = function (str, self = null) {
   let locale = self ? self.locale : this.locale
   if (!locale) return ''
   let t = ''
@@ -154,7 +181,7 @@ locale.t = function (str, self = null) {
   return t
 }
 
-locale.txt = function (str, self = null) {
+Locale.txt = function (str, self = null) {
   let locale = self ? self.locale : this.locale
   if (!locale) return ''
   let t = ''
@@ -168,7 +195,7 @@ locale.txt = function (str, self = null) {
   return t
 }
 
-locale.pug = function (str, self = null) {
+Locale.pug = function (str, self = null) {
   let locale = self ? self.locale : this.locale
   if (!locale) return ''
   let t = ''
@@ -182,7 +209,11 @@ locale.pug = function (str, self = null) {
   return t
 }
 
-locale.getPageLink = function(name, title = null, self = null) {
+//
+// Specific to Hlkz/nodejs-base
+//
+
+Locale.getPageLink = function(name, title = null, self = null) {
   let locale = self ? self.locale : this.locale
   if (!locale) return ''
   let page = this.pages_by_name[name]
@@ -197,15 +228,25 @@ locale.getPageLink = function(name, title = null, self = null) {
   return ''
 }
 
-locale.getToogleDivLink = function(name, div) {
+Locale.getToogleDivLink = function(name, div) {
   return pug.render('li: a(href=\'#\', toogle-div=\''+div+'\') '+this.t(name))
 }
 
-locale._t = {}
-locale._txt = {}
-locale._pug = {}
-locale.loaded = []
-locale.fullLoaded = false
-locale.db = null
+//
+// Members
+//
 
-module.exports = locale
+/* Recurrent members */
+Locale._t = {}
+Locale._txt = {}
+Locale._pug = {}
+Locale.loaded = []
+Locale.fullLoaded = false
+Locale.db = null
+Locale.pages_by_name
+/* Instance members */
+//locale.locale // 'fr' or 'en'
+//locale.loc = _loc[locale]
+//locale.names // string array
+
+export default Locale

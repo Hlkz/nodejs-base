@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "build": "babel core -d build",
-    "server": "node build/www.js",
+    "server": "node build/server.js",
     "s": "npm run build && npm run server",
-    "start": "nodemon ./core/www.js -e js,json --exec babel-node --presets react,es2015,stage-0"
+    "start": "nodemon ./core/server.js -e js,json --exec babel-node --presets react,es2015,stage-0"
   },
   "dependencies": {
     "autobind-decorator": "^1.3.4",

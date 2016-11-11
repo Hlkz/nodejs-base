@@ -1,16 +1,21 @@
-import express from 'express'
 import path from 'path'
+import express from 'express'
 import favicon from 'serve-favicon'
 import logger from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { CorePath, DataPath } from './path'
 
+
 let app = express()
+
+app.njb_config = {
+  pageonly_enabled: true,
+}
 
 // view engine setup
 app.set('dirname', __dirname)
-app.set('views', path.join(CorePath, 'pug'))
+app.set('views', path.join(CorePath, 'njb/pug'))
 app.set('view engine', 'pug')
 
 app.use(logger('dev'))
@@ -23,6 +28,7 @@ app.use(favicon(path.join(DataPath, 'img/favicon.ico')))
 // building and watching files (css, script)
 require('./gulp')
 
+// config
 let config = require(path.join(CorePath, 'site/config/config.json'))
 app.set('config', config)
 
@@ -43,14 +49,16 @@ import locale from './locale'
 app.set('locale', locale)
 locale.load(db)
 
+// Routes
 import prefix from './prefix'
 import Catch from './catch'
-import Route from './route'
-
+import route from './route'
 app.use('/', prefix)
 Catch(app)
-Route(app)
+route(app)
 
-module.exports = app
+// www
+import www from './www'
+www(app)
 
-console.log("end, server up!")
+export default app

@@ -1,4 +1,4 @@
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
     let host = req.get('host')
     let domain = ''
     let prefix = ''
