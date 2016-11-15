@@ -3,19 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "babel core -d build",
+    "build": "babel core -d build --presets es2015 --ignore core/njb/script/*,core/site/apps/*,core/site/script/*",
     "server": "node build/server.js",
     "s": "npm run build && npm run server",
-    "start": "nodemon ./core/server.js -e js,json --exec babel-node --presets react,es2015,stage-0"
+    "start": "nodemon ./core/server.js -e js,json --exec babel-node --presets es2015 --ignore core/njb/script/*,core/site/apps/*,core/site/script/*"
   },
   "dependencies": {
     "autobind-decorator": "^1.3.4",
     "autoprefixer-stylus": "^0.11.0",
     "babel-cli": "^6.18.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
-    "babelify": "^6.4.0",
+    "babelify": "^7.3.0",
     "body-parser": "~1.15.1",
     "browserify": "^13.1.1",
     "busboy": "^0.2.13",

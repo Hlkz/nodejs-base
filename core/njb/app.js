@@ -4,6 +4,7 @@ import favicon from 'serve-favicon'
 import logger from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import File from './file'
 import { CorePath, DataPath } from './path'
 
 
@@ -27,6 +28,10 @@ app.use(favicon(path.join(DataPath, 'img/favicon.ico')))
 
 // building and watching files (css, script)
 require('./gulp')
+let gulpAddPath = CorePath+'/site/gulp.js'
+if (File.exists(gulpAddPath))
+  require(gulpAddPath)
+
 
 // config
 let config = require(path.join(CorePath, 'site/config/config.json'))
